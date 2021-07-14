@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Pomodoro</string>
+
+    <string name="time">Time</string>
+    <string name="list">Lista</string>
+
+    <string name="title_new_item_list">Nova atividade</string>
+    <string name="deleteItemList">Deletar item</string>
+    <string name="confirmAction">Ok</string>
+    <string name="cancelAction">Cancelar</string>
+    <string name="deleteItemMessage">Deseja realmente deletar este item?</string>
+
+    <string name="list_empty">Ops, lista vazia!</string>
+</resources>

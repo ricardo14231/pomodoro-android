@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragment.RecyclerViewFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="70dp"
+        />
+    <ImageButton
+        android:id="@+id/ib_new_item_list"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="end|bottom"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
+        android:src="@drawable/ic_add_black"
+        android:background="@drawable/button_pressed"
+        />
+
+    <include
+        android:id="@+id/f_item_list_empty"
+        layout="@layout/fragment_item_list_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        tools:visibility="visible"
+        />
+</FrameLayout>

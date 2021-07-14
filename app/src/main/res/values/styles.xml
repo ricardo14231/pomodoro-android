@@ -1,0 +1,26 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+    </style>
+
+    <style name="CircularDeterminateProgressBar">
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:progressDrawable">@drawable/time_circulo</item>
+    </style>
+
+    <style name="btnActive">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:colorBackground">@color/colorPrimary</item>
+    </style>
+
+    <style name="btnNotActive">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:colorBackground">#FFFFFF</item>
+    </style>
+
+</resources>
