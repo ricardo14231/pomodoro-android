@@ -32,9 +32,9 @@ public class RecyclerViewFragment extends Fragment {
     private AdapterListPomodoro adapterList;
     private List<ListItemPomodoro> listItem = new ArrayList<>();
     private ImageButton btnNewItem;
-    private ImageButton btnDeleteItem;
+    private int indexRemoveItemList;
     private boolean isTacked = false;
-    private  EmptyObserver emptyObserver;
+    private EmptyObserver emptyObserver;
 
     public RecyclerViewFragment() {
         // Required empty public constructor
@@ -48,59 +48,24 @@ public class RecyclerViewFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_recycler_view, container, false);
 
         btnNewItem = view.findViewById(R.id.ib_new_item_list);
-        btnDeleteItem = view.findViewById(R.id.iv_delete);
 
-        recyclerView = view.findViewById(R.id.rv_fragment);
+        buildRecyclerView(view);
 
-        //Adapter
-        adapterList = new AdapterListPomodoro( listItem );
+        adapterList.setOnItemClickListener(new AdapterListPomodoro.OnItemClickListener() {
 
-
-
-        emptyObserver = new EmptyObserver (recyclerView, view.findViewById(R.id.f_item_list_empty));
-        adapterList.registerAdapterDataObserver(emptyObserver);
-
-
-
-        //RecyclerView
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext());
-        recyclerView.setLayoutManager( layoutManager );
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter( adapterList );
-
-        adapterList.notifyDataSetChanged();
-
-
-/*
-        adapter_list.setOnItemClickListener(new AdapterListPomodoro.OnItemClickListener() {
             @Override
-            public void onClick(int position) {
-                System.out.println("Foi");
+            public void longClickListener(int position) {
+                isTacked = !isTacked;
+                listItem.get(position).setTacked(isTacked);
+                adapterList.notifyItemChanged(position);
+            }
+
+            @Override
+            public void onDeleteClick(int position) {
+                indexRemoveItemList = position;
                 deleteItemDialog();
             }
         });
-*/
-        recyclerView.addOnItemTouchListener(
-            new RecyclerItemClickListener(
-                    getContext(),
-                    recyclerView,
-                    new RecyclerItemClickListener.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(View view, int position) {
-
-                        }
-
-                        @Override
-                        public void onLongItemClick(View view, int position) {
-                            isTacked = !isTacked;
-                            setTacked(position, isTacked);
-                        }
-
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) { }
-                    }
-            )
-        );
 
         btnNewItem.setOnClickListener(new View.OnClickListener() {
 
@@ -113,16 +78,34 @@ public class RecyclerViewFragment extends Fragment {
         return view;
     }
 
-    public void AddItemList(String itemList) {
-        ListItemPomodoro item = new ListItemPomodoro(itemList);
+    public void AddItemList(String listItem) {
+        ListItemPomodoro item = new ListItemPomodoro(listItem);
         this.listItem.add( item );
 
         //Notifica a alteração no adapter para exibir/ocultar a view f_item_list_empty.
         adapterList.notifyDataSetChanged();
     }
 
+    private void buildRecyclerView(View view) {
+        recyclerView = view.findViewById(R.id.rv_fragment);
 
-    public void newItemDialog() {
+        //Adapter
+        adapterList = new AdapterListPomodoro( listItem );
+
+        emptyObserver = new EmptyObserver (recyclerView, view.findViewById(R.id.f_item_list_empty));
+        adapterList.registerAdapterDataObserver(emptyObserver);
+
+        //RecyclerView
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext());
+        recyclerView.setLayoutManager( layoutManager );
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter( adapterList );
+
+        adapterList.notifyDataSetChanged();
+    }
+
+
+    private void newItemDialog() {
 
         AlertDialog.Builder newDialog = new AlertDialog.Builder(recyclerView.getContext());
 
@@ -153,17 +136,18 @@ public class RecyclerViewFragment extends Fragment {
          newDialog.show();
     }
 
-    public void deleteItemDialog() {
+    private void deleteItemDialog() {
+
         AlertDialog.Builder deleteDialog = new AlertDialog.Builder(recyclerView.getContext());
 
         deleteDialog.setTitle(R.string.deleteItemList);
-
         deleteDialog.setMessage(R.string.deleteItemMessage);
+
         deleteDialog.setPositiveButton(R.string.confirmAction, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int position) {
-                listItem.remove(position);
-                adapterList.notifyItemChanged(position);
+                listItem.remove(indexRemoveItemList);
+                adapterList.notifyItemRemoved(indexRemoveItemList);
             }
         }).setNegativeButton(R.string.cancelAction, new DialogInterface.OnClickListener() {
             @Override
@@ -174,24 +158,6 @@ public class RecyclerViewFragment extends Fragment {
 
         deleteDialog.create();
         deleteDialog.show();
-    }
-
-    private void addTeste() {
-        btnDeleteItem = recyclerView.findViewById(R.id.iv_delete);
-
-        btnDeleteItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deleteItemDialog();
-            }
-        });
-    }
-
-    private void setTacked(int position, boolean tacked) {
-        String title = listItem.get(position).getTitle();
-        listItem.get(position).setTitle(title);
-        listItem.get(position).setTacked(tacked);
-        adapterList.notifyItemChanged(position);
     }
 
     private void showKeyboard(Boolean show) {
