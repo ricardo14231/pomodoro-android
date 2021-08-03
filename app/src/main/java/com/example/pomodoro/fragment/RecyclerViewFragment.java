@@ -1,22 +1,21 @@
 package com.example.pomodoro.fragment;
 
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pomodoro.R;
 import com.example.pomodoro.adapter.AdapterListPomodoro;
@@ -31,7 +30,6 @@ public class RecyclerViewFragment extends Fragment {
     private RecyclerView recyclerView;
     private AdapterListPomodoro adapterList;
     private List<ListItemPomodoro> listItem = new ArrayList<>();
-    private ImageButton btnNewItem;
     private int indexRemoveItemList;
     private boolean isTacked = false;
     private EmptyObserver emptyObserver;
@@ -47,7 +45,7 @@ public class RecyclerViewFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_recycler_view, container, false);
 
-        btnNewItem = view.findViewById(R.id.ib_new_item_list);
+        ImageButton btnNewItem = view.findViewById(R.id.ib_new_item_list);
 
         buildRecyclerView(view);
 
@@ -61,6 +59,11 @@ public class RecyclerViewFragment extends Fragment {
             }
 
             @Override
+            public void onEditClick(int position) {
+                dialogTitleItem(listItem.get(position).getTitle(), true, position);
+            }
+
+            @Override
             public void onDeleteClick(int position) {
                 indexRemoveItemList = position;
                 deleteItemDialog();
@@ -71,19 +74,21 @@ public class RecyclerViewFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                newItemDialog();
+                dialogTitleItem("", false, -1);
             }
         });
 
         return view;
     }
 
-    public void AddItemList(String listItem) {
-        ListItemPomodoro item = new ListItemPomodoro(listItem);
-        this.listItem.add( item );
+    private void addItemList(String textItem) {
+        if(textItem.length() > 0) {
+            ListItemPomodoro item = new ListItemPomodoro(textItem);
+            this.listItem.add( item );
 
-        //Notifica a alteração no adapter para exibir/ocultar a view f_item_list_empty.
-        adapterList.notifyDataSetChanged();
+            //Notifica a alteração no adapter para exibir/ocultar a view f_item_list_empty.
+            adapterList.notifyDataSetChanged();
+        }
     }
 
     private void buildRecyclerView(View view) {
@@ -104,16 +109,16 @@ public class RecyclerViewFragment extends Fragment {
         adapterList.notifyDataSetChanged();
     }
 
-
-    private void newItemDialog() {
+    private void dialogTitleItem(String textItem, final boolean editTextTitle, final int position) {
 
         AlertDialog.Builder newDialog = new AlertDialog.Builder(recyclerView.getContext());
 
         LayoutInflater inflater = requireActivity().getLayoutInflater();
-        View viewNewItemList = inflater.inflate(R.layout.new_item_list, null);
+        @SuppressLint("InflateParams") View viewNewItemList = inflater.inflate(R.layout.new_item_list, null);
 
-        final EditText textTitle = viewNewItemList.findViewById(R.id.et_new_item_list);
-        textTitle.requestFocus();
+        final EditText text = viewNewItemList.findViewById(R.id.et_new_item_list);
+        text.requestFocus();
+        text.setText(textItem);
 
         showKeyboard(true);
 
@@ -122,7 +127,9 @@ public class RecyclerViewFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        AddItemList(textTitle.getText().toString());
+
+                        setTextTitleItem(text.getText().toString(), editTextTitle, position);
+
                         showKeyboard(false);
 
                     }
@@ -134,6 +141,15 @@ public class RecyclerViewFragment extends Fragment {
                 });
          newDialog.create();
          newDialog.show();
+    }
+
+    private void setTextTitleItem(String text, boolean editTextTitle, int position) {
+        if(editTextTitle) {
+            listItem.get(position).setTitle(text);
+            adapterList.notifyItemChanged(position);
+        } else {
+            addItemList(text);
+        }
     }
 
     private void deleteItemDialog() {

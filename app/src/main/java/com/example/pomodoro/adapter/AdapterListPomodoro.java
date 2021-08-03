@@ -29,6 +29,7 @@ public class AdapterListPomodoro extends RecyclerView.Adapter<AdapterListPomodor
 
     public interface OnItemClickListener {
         void longClickListener(int position);
+        void onEditClick(int position);
         void onDeleteClick(int position);
     }
 
@@ -51,7 +52,7 @@ public class AdapterListPomodoro extends RecyclerView.Adapter<AdapterListPomodor
 
         ListItemPomodoro item = listItem.get(position);
 
-        //Seta o título está tachado, caso esteja.
+        //Seta o título tachado, caso esteja.
         if(item.getTacked()) {
             holder.titleItem.setText(item.getTitle());
             holder.titleItem.setPaintFlags(holder.titleItem.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -93,6 +94,19 @@ public class AdapterListPomodoro extends RecyclerView.Adapter<AdapterListPomodor
                         }
                     }
                     return true;
+                }
+            });
+
+            bntEdit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(listener != null) {
+                        int position = getAbsoluteAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION) {
+                            listener.onEditClick(position);
+                        }
+                    }
+
                 }
             });
 
